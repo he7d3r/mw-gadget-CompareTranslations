@@ -42,10 +42,43 @@ if (mw.config.get('wgCanonicalNamespace') === 'MediaWiki') {
 	});
 }
 
+// Copy from http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#JavaScript
+function levenshtein(str1, str2) {
+	// small modification to avoid an error
+	if( typeof str1 !== 'string' || typeof str2 !== 'string'){
+console.debug(str1, str2);
+	}
+	// end of modification
+	var l1 = str1.length, l2 = str2.length;
+	if (Math.min(l1, l2) === 0) {
+		return Math.max(l1, l2);
+	}
+	var i = 0, j = 0, d = [];
+	for (i = 0 ; i <= l1 ; i++) {
+		d[i] = [];
+		d[i][0] = i;
+	}
+	for (j = 0 ; j <= l2 ; j++) {
+		d[0][j] = j;
+	}
+	for (i = 1 ; i <= l1 ; i++) {
+		for (j = 1 ; j <= l2 ; j++) {
+		d[i][j] = Math.min(
+		        d[i - 1][j] + 1,
+		        d[i][j - 1] + 1,
+		        d[i - 1][j - 1] + (str1.charAt(i - 1) === str2.charAt(j - 1) ? 0 : 1)
+		);
+		}
+	}
+	return d[l1][l2];
+}
+// End of copy
+
 function compareTranslations(lang1, lang2, group) {
 	var	mwmsg = {},
 		total = 0,
 		diffCount = 0,
+		diffOneCount = 0,
 		firstLang = true,
 		diff = {};
 
@@ -65,7 +98,10 @@ function compareTranslations(lang1, lang2, group) {
 				newOffset = (cont && cont.messagecollection && cont.messagecollection.mcoffset) || 0;
 			if (firstLang) {
 				total += list.length;
-				jsMsg('Processing list of "' + group + '" messages in "' + lang1 + '"... (' + total + ' messages processed)');
+				jsMsg(
+					'Processando a lista de mensagens "' + group + '" em "' +
+					lang1 + '"... (' + total + ' mensagens processadas)'
+				);
 				/*jslint unparam: true*/
 				$.each(list, function (i, msg) {
 					mwmsg[msg.key] = msg.translation;
@@ -84,14 +120,17 @@ function compareTranslations(lang1, lang2, group) {
 						diff[msg.key] = {};
 						diff[msg.key][lang1] = mwmsg[msg.key];
 						diff[msg.key][lang2] = msg.translation;
+						if ( diff[msg.key][lang1] && diff[msg.key][lang2] && levenshtein( diff[msg.key][lang1], diff[msg.key][lang2] ) === 1 ) {
+							diffOneCount++;
+						}
 						delete mwmsg[msg.key];
 						diffCount++;
 						jsMsg(
-							'Processing list of "' + group +
-							'" messages in "' + lang2 +
-							'"... (so far, ' + diffCount +
-							' messages differ from its "' +
-							lang1 + '" version)'
+							'Processando a lista de mensagens "' + group +
+							'" em "' + lang2 +
+							'"... (até agora, ' + diffCount +
+							' diferem de sua versão "' +
+							lang1 + '", e ' + diffOneCount + ' delas diferem apenas por um único caractere)'
 						);
 					}
 				});
@@ -100,20 +139,22 @@ function compareTranslations(lang1, lang2, group) {
 					getMsgList(lang, group, newOffset);
 				} else {
 					jsMsg(
-						'There are ' + total + ' messages in group "' +
-						group + '", ' + (total - diffCount) +
-						' of which are identical in "' + lang1 + '" and "' +
-						lang2 + '" (' + (100 * (total - diffCount) / total).toFixed(1) + ' %).'
+						'Há ' + total + ' mensagens no grupo "' +
+						group + '",  das quais ' + (total - diffCount) +
+						' são idênticas em "' + lang1 + '" e "' +
+						lang2 + '" (' + (100 * (total - diffCount) / total).toFixed(1) +
+						' %), e ' + diffOneCount + ' diferem apenas por um caractere (' +
+						(100 * diffOneCount / total).toFixed(1) + ' % do total)'
 					);
 					console.debug('identical=', mwmsg);
 					console.debug('diff=', diff);
 				}
 			}
 		}).error(function () {
-			jsMsg('There was an error while requesting the translation list. =(');
+			jsMsg('Houve um erro ao requisitar a lista de traduções.');
 		});
 	}
-	jsMsg('Initializing comparison of "' + group + '" messages in "' + lang1 + '" and "' + lang2 + '"');
+	jsMsg('Iniciando a comparação das mensagens "' + group + '" em "' + lang1 + '" e "' + lang2 + '"');
 	getMsgList(lang1, group || 'core');
 }
 
