@@ -46,7 +46,7 @@ if (mw.config.get('wgCanonicalNamespace') === 'MediaWiki') {
 function levenshtein(str1, str2) {
 	// small modification to avoid an error
 	if( typeof str1 !== 'string' || typeof str2 !== 'string'){
-console.debug(str1, str2);
+mw.log(str1, str2);
 	}
 	// end of modification
 	var l1 = str1.length, l2 = str2.length;
@@ -146,8 +146,8 @@ function compareTranslations(lang1, lang2, group) {
 						' %), e ' + diffOneCount + ' diferem apenas por um caractere (' +
 						(100 * diffOneCount / total).toFixed(1) + ' % do total)'
 					);
-					console.debug('identical=', mwmsg);
-					console.debug('diff=', diff);
+					mw.log('identical=', mwmsg);
+					mw.log('diff=', diff);
 				}
 			}
 		}).error(function () {
