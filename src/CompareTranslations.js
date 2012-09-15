@@ -4,8 +4,8 @@
  * @tracking: [[Special:GlobalUsage/User:Helder.wiki/Tools/CompareTranslations.js]] ([[File:User:Helder.wiki/Tools/CompareTranslations.js]])
  */
 /*jslint browser: true, white: true, plusplus: true, devel: true */
-/*global jQuery, mediaWiki, jsMsg */
-(function ($, mw /* , undefined */ ) {
+/*global mediaWiki, jQuery */
+( function ( mw, $ ) {
 'use strict';
 
 // Script para incluir links pt/pt-br nos títulos das páginas de mensagens do sistema
@@ -49,11 +49,13 @@ function levenshtein(str1, str2) {
 mw.log(str1, str2);
 	}
 	// end of modification
+/*jslint vars: true*/
 	var l1 = str1.length, l2 = str2.length;
 	if (Math.min(l1, l2) === 0) {
 		return Math.max(l1, l2);
 	}
 	var i = 0, j = 0, d = [];
+/*jslint vars: false*/
 	for (i = 0 ; i <= l1 ; i++) {
 		d[i] = [];
 		d[i][0] = i;
@@ -98,9 +100,11 @@ function compareTranslations(lang1, lang2, group) {
 				newOffset = (cont && cont.messagecollection && cont.messagecollection.mcoffset) || 0;
 			if (firstLang) {
 				total += list.length;
-				jsMsg(
+				mw.notify(
 					'Processando a lista de mensagens "' + group + '" em "' +
-					lang1 + '"... (' + total + ' mensagens processadas)'
+						lang1 + '"... (' + total + ' mensagens processadas)', {
+						tag: 'msg-analysis'
+					}
 				);
 				/*jslint unparam: true*/
 				$.each(list, function (i, msg) {
@@ -125,12 +129,14 @@ function compareTranslations(lang1, lang2, group) {
 						}
 						delete mwmsg[msg.key];
 						diffCount++;
-						jsMsg(
+						mw.notify(
 							'Processando a lista de mensagens "' + group +
 							'" em "' + lang2 +
 							'"... (até agora, ' + diffCount +
 							' diferem de sua versão "' +
-							lang1 + '", e ' + diffOneCount + ' delas diferem apenas por um único caractere)'
+							lang1 + '", e ' + diffOneCount + ' delas diferem apenas por um único caractere)', {
+								tag: 'msg-analysis'
+							}
 						);
 					}
 				});
@@ -138,23 +144,26 @@ function compareTranslations(lang1, lang2, group) {
 				if (newOffset) {
 					getMsgList(lang, group, newOffset);
 				} else {
-					jsMsg(
+					mw.notify(
 						'Há ' + total + ' mensagens no grupo "' +
 						group + '",  das quais ' + (total - diffCount) +
 						' são idênticas em "' + lang1 + '" e "' +
 						lang2 + '" (' + (100 * (total - diffCount) / total).toFixed(1) +
 						' %), e ' + diffOneCount + ' diferem apenas por um caractere (' +
-						(100 * diffOneCount / total).toFixed(1) + ' % do total)'
-					);
+						(100 * diffOneCount / total).toFixed(1) + ' % do total)', {
+						autoHide: false
+					});
 					mw.log('identical=', mwmsg);
 					mw.log('diff=', diff);
 				}
 			}
 		}).error(function () {
-			jsMsg('Houve um erro ao requisitar a lista de traduções.');
+			mw.notify('Houve um erro ao requisitar a lista de traduções.');
 		});
 	}
-	jsMsg('Iniciando a comparação das mensagens "' + group + '" em "' + lang1 + '" e "' + lang2 + '"');
+	mw.notify('Iniciando a comparação das mensagens "' + group + '" em "' + lang1 + '" e "' + lang2 + '"', {
+		tag: 'msg-analysis'
+	});
 	getMsgList(lang1, group || 'core');
 }
 
@@ -184,4 +193,4 @@ if ( mw.config.get('wgSiteName') === 'translatewiki.net' ){
 	$(run);
 }
 
-}(jQuery, mediaWiki));
+}( mediaWiki, jQuery ) );
