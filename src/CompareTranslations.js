@@ -2,7 +2,6 @@
  * Compare pt and pt-br translations of the MW messages
  * @author: Helder (https://github.com/he7d3r)
  * @license: CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0/>
- * @tracking: [[Special:GlobalUsage/User:Helder.wiki/Tools/CompareTranslations.js]] ([[File:User:Helder.wiki/Tools/CompareTranslations.js]])
  */
 /*jslint browser: true, white: true, plusplus: true, devel: true */
 /*global mediaWiki, jQuery */
