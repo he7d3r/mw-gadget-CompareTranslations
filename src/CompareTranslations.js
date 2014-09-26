@@ -3,8 +3,6 @@
  * @author: Helder (https://github.com/he7d3r)
  * @license: CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0/>
  */
-/*jslint browser: true, white: true, plusplus: true, devel: true */
-/*global mediaWiki, jQuery */
 ( function ( mw, $ ) {
 'use strict';
 
@@ -49,13 +47,11 @@ function levenshtein(str1, str2) {
 mw.log(str1, str2);
 	}
 	// end of modification
-/*jslint vars: true*/
 	var l1 = str1.length, l2 = str2.length;
 	if (Math.min(l1, l2) === 0) {
 		return Math.max(l1, l2);
 	}
 	var i = 0, j = 0, d = [];
-/*jslint vars: false*/
 	for (i = 0 ; i <= l1 ; i++) {
 		d[i] = [];
 		d[i][0] = i;
@@ -106,11 +102,11 @@ function compareTranslations(lang1, lang2, group) {
 						tag: 'msg-analysis'
 					}
 				);
-				/*jslint unparam: true*/
+				/*jshint unused:false */
 				$.each(list, function (i, msg) {
 					mwmsg[msg.key] = msg.translation;
 				});
-				/*jslint unparam: false*/
+				/*jshint unused:true */
 				if (newOffset) {
 					getMsgList(lang, group, newOffset);
 				} else {
@@ -118,7 +114,7 @@ function compareTranslations(lang1, lang2, group) {
 					getMsgList(lang2, group);
 				}
 			} else {
-				/*jslint unparam: true*/
+				/*jshint unused:false */
 				$.each(list, function (i, msg) {
 					if (mwmsg[msg.key] !== msg.translation) {
 						diff[msg.key] = {};
@@ -140,7 +136,7 @@ function compareTranslations(lang1, lang2, group) {
 						);
 					}
 				});
-				/*jslint unparam: false*/
+				/*jshint unused:true */
 				if (newOffset) {
 					getMsgList(lang, group, newOffset);
 				} else {
