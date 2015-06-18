@@ -91,7 +91,8 @@
 				mcgroup: group,
 				mcoffset: offset || 0,
 				mcprop: 'translation',
-				mclanguage: lang
+				mclanguage: lang,
+				rawcontinue: 1
 			}, function (data) {
 				var	list = (data && data.query && data.query.messagecollection) || [],
 					cont = data && data['query-continue'],
